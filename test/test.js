@@ -1,6 +1,5 @@
 var oecloud = require('oe-cloud');
 var loopback = require('loopback');
-oecloud.attachMixinsToBaseEntity("SkeletonMixin");
 
 oecloud.observe('loaded', function (ctx, next) {
 console.log("oe-cloud modules loaded");
@@ -29,10 +28,8 @@ var expect = chai.expect;
 var app = oecloud;
 var defaults = require('superagent-defaults');
 var supertest = require('supertest');
-var Customer;
 var api = defaults(supertest(app));
 var basePath = app.get('restApiRoot');
-var url = basePath + '/Customers';
 
 function deleteAllUsers(done) {
   var userModel = loopback.findModel("User");
@@ -45,7 +42,6 @@ describe(chalk.blue('SkeletonTest Started'), function (done) {
   this.timeout(10000);
   before('wait for boot scripts to complete', function (done) {
     app.on('test-start', function () {
-      Customer = loopback.findModel("Customer");
       deleteAllUsers(function (err) {
 	    return done(err);
       });
@@ -115,28 +111,6 @@ describe(chalk.blue('SkeletonTest Started'), function (done) {
       evToken = result.id;
       expect(evToken).to.be.defined;
       done();
-    });
-  });
-
-
-  var bpoToken;
-  it('t5 Login with bpo credentials', function (done) {
-    var url = basePath + '/users/login';
-    api.set('Accept', 'application/json')
-    .post(url)
-    .send({ username: "bpouser", password: "bpouser" })
-    .end(function (err, response) {
-      var result = response.body;
-      bpoToken = result.id;
-      expect(bpoToken).to.be.defined;
-      done();
-    });
-  });
-
-  it('t6 skeleton test case', function (done) {
-    var skeleton = loopback.findModel("Skeleton");
-    skeleton.find({}, {}, function (err, r) {
-      return done(err);
     });
   });
 });
