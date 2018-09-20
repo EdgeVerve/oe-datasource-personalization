@@ -16,7 +16,8 @@ oecloud.observe('loaded', function (ctx, next) {
   return next();
 })
 
-
+var Customer;
+var DataSourceDefinition;
 oecloud.boot(__dirname, function (err) {
   if (err) {
     console.log(err);
@@ -105,6 +106,8 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
   this.timeout(10000);
   before('wait for boot scripts to complete', function (done) {
     app.on('test-start', function () {
+      Customer = loopback.findModel("Customer");
+      DataSourceDefinition = loopback.findModel("DataSourceDefinition");
       deleteAllUsers(function (err) {
 	      return done(err);
       });
@@ -225,6 +228,39 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
         expect(bpoToken).to.be.defined;
         done();
       });
+  });
+
+
+  it("it - creating default record in Customer model", function (done) {
+    Customer.create({ name: "A", age: 10 }, { ctx: {tenantId : '/default'}}, function (err, r) {
+      return done(err);
+    });
+  });
+
+  it("it - Create new DataSource for icici tenant", function (done) {
+    DataSourceDefinition.create({
+      "host": "localhost",
+      "port": 27017,
+      "url": "mongodb://localhost:27017/oe-datasource-personalization-test-icici",
+      "database": "oe-datasource-personalization-test-icici",
+      "password": "admin",
+      "name": "icicidb",
+      "connector": "mongodb",
+      "user": "admin",
+      "connectionTimeout": 500000,
+      "connectTimeoutMS": 500000,
+      "socketTimeoutMS": 500000,
+      "id": "icicidb"
+    }, { ctx: { tenantId: "/default/icici" } }, function (err, r) {
+      return done(err);
+    });
+  });
+
+    it("it - Create record in Customer with icici tenant and it should go in new database for icici", function (done) {
+      Customer.create({ name: "A", age: 10 }, { ctx: { tenantId: '/default/icici' } }, function (err, r) {
+        return done(err);
+      });
+
   });
 
 

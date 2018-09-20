@@ -20,5 +20,18 @@
     "connectionTimeout": 500000,
     "connectTimeoutMS": 500000,
     "socketTimeoutMS": 500000
+  },
+  "db2": {
+    "host": "localhost",
+    "port": 27017,
+    "url": "mongodb://localhost:27017/oe-datasource-personalization-test2",
+    "database": "oe-datasource-personalization-test2",
+    "password": "admin",
+    "name": "db2",
+    "connector": "mongodb",
+    "user": "admin",
+    "connectionTimeout": 500000,
+    "connectTimeoutMS": 500000,
+    "socketTimeoutMS": 500000
   }
 }

@@ -19,6 +19,7 @@ module.exports = (Model) => {
     Model.firstDataSource = Model.getDataSource();
     var autoscopeFields = util.getAutoscopeOfDataSourceDefinition();
     util.addDataSourceToCache(autoscopeFields, Model.modelName, null, Model.firstDataSource);
+
     Model.setDataSource = function (options) {
       var self = this;
       console.log(self.modelName);

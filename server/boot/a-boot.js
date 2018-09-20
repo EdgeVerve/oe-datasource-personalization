@@ -8,7 +8,7 @@
 // Author : Atul
 const utils = require('../../lib/utils');
 const loopback = require('loopback');
-module.exports = function (app, cb) {
+module.exports = function (app) {
   var Model = loopback.findModel('DataSourceDefinition');
   Model.observe('after save', (ctx, next) => {
     if (ctx.instance && ctx.instance.modelName) {
@@ -21,6 +21,5 @@ module.exports = function (app, cb) {
     }
     return next();
   });
-  return cb();
 };
 
