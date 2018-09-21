@@ -30,6 +30,7 @@ var oracleConnectSettings = {
 };
 
 var userName = process.env.CI_PROJECT_NAMESPACE.toUpperCase() + '-' + (process.env.CI_PROJECT_NAME || 'oecloud').toUpperCase();
+var userName2 = process.env.CI_PROJECT_NAMESPACE.toUpperCase() + '-' + (process.env.CI_PROJECT_NAME || 'oecloud').toUpperCase() + '-ICICI';
 var password = process.env.CI_PROJECT_NAMESPACE.toLowerCase();
 
 var grants = [
@@ -43,6 +44,37 @@ var grants = [
   'CREATE PROCEDURE'
 ];
 
+function createUser2(connection, cb) {
+  var sql = 'alter session set "_ORACLE_SCRIPT"=true';
+  connection.execute(sql, function (e, r) {
+    if (e) {
+      console.error('Ignoring error of alter session. UserName : ' + userName2 + ' Error :' + e);
+    }
+    console.log(sql, ' ......... ok');
+    var sql = 'CREATE USER "' + userName2 + '" IDENTIFIED BY ' + password;
+
+    connection.execute(sql, function (err, result) {
+      if (err) {
+        throw new Error('Unable to create user ' + userName2 + ' Error :' + err);
+      }
+      console.log(sql, ' ......... ok');
+      async.each(grants, function (g, callback) {
+        var sql = 'GRANT ' + g + ' to "' + userName2 + '"';
+
+        connection.execute(sql, function (err2, result2) {
+          if (err2) {
+            throw new Error('Unable to execute grant ' + sql);
+          }
+          console.log(sql, ' ......... ok');
+          return callback();
+        });
+      }, function (err) {
+        console.log('User ' + userName2 + ' Created successfully');
+        return cb();
+      });
+    });
+  });
+}
 function createUser(connection, cb) {
   var sql = 'alter session set "_ORACLE_SCRIPT"=true';
   connection.execute(sql, function (e, r) {
@@ -74,7 +106,49 @@ function createUser(connection, cb) {
     });
   });
 }
+function dropTables2(cb) {
+  var oracleConnectSettings2 = Object.assign({}, oracleConnectSettings);
+  oracleConnectSettings2.user = userName2;
+  oracleConnectSettings2.password = password;
 
+  oracledb.getConnection(
+    oracleConnectSettings2,
+    function (err, connection) {
+      if (err) {
+        console.log(err);
+        throw new Error(err + ' Unable to connect to Oracle Database ' + JSON.stringify(oracleConnectSettings2));
+      }
+      var sql = "select 'drop table \"' || table_name || '\"' from all_tables where owner = '" + userName2 + "'";
+      var totalRows = 1000;
+
+      connection.execute(sql, {}, { maxRows: totalRows }, function (err, result) {
+        if (err) {
+          throw new Error('Unable to find tables ' + userName2 + ' Error :' + err);
+        }
+        connection.execute(sql, {}, { maxRows: totalRows }, function (err2, result2) {
+          if (err2) {
+            throw new Error('Unable to execute droping of table ' + sql);
+          }
+          if (!result2 || !result2.rows || result2.rows.length === 0) {
+            return cb();
+          }
+          async.each(result2.rows, function (row, callback) {
+            var sql = row[0];
+            connection.execute(sql, function (err2, result2) {
+              if (err2) {
+                throw new Error('Unable to drop table\nERROR : ' + err2 + '\nSQL : ' + sql);
+              }
+              console.log(sql, ' ......... ok');
+              return callback();
+            });
+          }, function (err) {
+            console.log('Tables of user ' + userName2 + ' dropped successfully');
+            return cb();
+          });
+        });
+      });
+    });
+}
 
 function dropTables(cb) {
   var oracleConnectSettings2 = Object.assign({}, oracleConnectSettings);
@@ -119,6 +193,40 @@ function dropTables(cb) {
     });
 }
 
+
+function createAnotherSchema(){
+  oracledb.getConnection(
+    oracleConnectSettings,
+    function (err, connection) {
+      if (err) {
+        throw new Error('Unable to connect to Oracle Database ' + JSON.stringify(oracleConnectSettings));
+      }
+      var sql = "select username, user_id from dba_users where username = '" + userName2 + "'";
+      console.log(sql);
+      connection.execute(sql,
+        function (err, result) {
+          if (err) {
+            console.error(err); return;
+          }
+          if (!result.rows || result.rows.length == 0) {
+            createUser2(connection, function (err) {
+              if (err) {
+                return process.exit(1);
+              }
+              return process.exit();
+            });
+          } else {
+            dropTables2(function (err) {
+              if (err) {
+                return process.exit(1);
+              }
+              return process.exit();
+            });
+          }
+        });
+    });
+}
+
 oracledb.getConnection(
   oracleConnectSettings,
   function (err, connection) {
@@ -137,14 +245,14 @@ oracledb.getConnection(
             if (err) {
               return process.exit(1);
             }
-            return process.exit();
+            return createAnotherSchema(); //process.exit();
           });
         } else {
           dropTables(function (err) {
             if (err) {
               return process.exit(1);
             }
-            return process.exit();
+            return createAnotherSchema(); //return process.exit();
           });
         }
       });

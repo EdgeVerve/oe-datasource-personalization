@@ -26,7 +26,12 @@ module.exports = (Model) => {
       if (self.definition.settings.overridingMixins && !self.definition.settings.overridingMixins.DataSourcePersonalizationMixin) {
         return self.firstDataSource.attach(self);
       }
-      var ds = getDataSource(self, options);
+      var opts = {};
+      opts.ctx = Object.assign({}, options.ctx);
+      if (!opts.ctx.modelName) {
+        opts.ctx.modelName = '/default/' + self.modelName;
+      }
+      var ds = getDataSource(self, opts);
       return ds.attach(self);
     };
   }
