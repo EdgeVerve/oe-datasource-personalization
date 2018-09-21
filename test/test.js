@@ -238,20 +238,22 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
   });
 
   it("it - Create new DataSource for icici tenant", function (done) {
-    DataSourceDefinition.create({
-      "host": "localhost",
-      "port": 27017,
-      "url": "mongodb://localhost:27017/oe-datasource-personalization-test-icici",
-      "database": "oe-datasource-personalization-test-icici",
-      "password": "admin",
-      "name": "icicidb",
-      "connector": "mongodb",
-      "user": "admin",
-      "connectionTimeout": 500000,
-      "connectTimeoutMS": 500000,
-      "socketTimeoutMS": 500000,
-      "id": "icicidb"
-    }, { ctx: { tenantId: "/default/icici" } }, function (err, r) {
+    var currentDB = process.env.NODE_ENV || '';
+    var datasourceFile;
+
+    if (!currentDB) {
+      datasourceFile = './datasources.json';
+    }
+    else {
+      datasourceFile = './datasources.' + currentDB + '.js';
+    }
+    var temp = require(datasourceFile);
+    var icicidb= Object.assign({}, temp.db);
+
+    icicidb.name = 'oe-ds-test-icici';
+    icicidb.id = 'oe-ds-test-icici';
+
+    DataSourceDefinition.create(icicidb, { ctx: { tenantId: "/default/icici" } }, function (err, r) {
       return done(err);
     });
   });
