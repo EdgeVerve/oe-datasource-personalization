@@ -8,10 +8,17 @@
 - [Using Data Source Personalization](#using-data-source-personalization)
   * [How to Load module](#how-to-load-module)
   * [Enabling Data Source Personalization](#enabling-data-source-personalization)
+- [Design](#design)
+  * [DataSourceDefinition Model](#datasourcedefinition-model)
+  * [Changes done in DataSourceDefinition](#changes-done-in-datasourcedefinition)
+  * [DataSourcePersonalizationMixin](#datasourcepersonalizationmixin)
+  * [setDataSource(options)](#setdatasource-options-)
+  * [wrapper.js](#wrapperjs)
 - [API Documentation](#api-documentation)
   * [addSettingsToDataSourceDefinition(s)](#addsettingstodatasourcedefinition-s-)
   * [setDataSourceDefinitionAutoscope(autoscopeFields)](#setdatasourcedefinitionautoscope-autoscopefields-)
-  
+
+
 # Introduction
 
 oeCloud extends personalization framework where user / developer can personalize the database. In some business scenarios, you want to store some models in different database(or data source). Also, it might be requirement where one tenant wants to store tenant's data in separate database. These requirements can be achieved using oe datasource personalization module.
@@ -110,6 +117,33 @@ oecloud.observe('loaded', function (ctx, next) {
 Above code will enable Data Source personalization enabled for all those models for which this Mixin is enabled. 
 
 **Note** - DataSource Personalization uses MultiTenancyMixin only for DataSourceDefinition model. Therefore, you don't have to enable Multi tenancy for the Model. If you look at test case, you will see that Customer Model doesn't have multi tenancy enabled. Only DataSourceDefinition model has multi-tenancy mixin enabled.
+
+
+# Design
+
+Following are areas in oeCloud which are changed/added in this module.
+
+## DataSourceDefinition Model
+
+This is framework model - this model is defined in oe-cloud project. This model, as name suggests, stores all the data source definitions/settings as metadata. This gives programmer ability to create Data Source run time by POSTing into this Model.
+
+## Changes done in DataSourceDefinition
+
+* This module adds **ModelName** property to this Model. Therefore, user can configure to store that model's data to specific Data Source
+* This module ensures that **MultiTenancyMixin** is applied to this model.
+* This module gives API to set autoscope fields
+
+## DataSourcePersonalizationMixin
+
+This mixin should be applied for the model for which you want to enable Data Source personalization. This also sometime called DataSourceSwitching. This mixin adds a new method to Model called **setDataSource()**.
+
+## setDataSource(options)
+
+This new method gets added to all models for which **DataSourcePersonalizationMixin** is enabled. This function is called just before DAO's (DataAccessObject) model methods are called. For example, before model.find() is called, this module calls model.setDataSource() function allowing to change the data source of model.
+
+## wrapper.js
+
+This file override all DAO methods and call setDataSource() before control is passed to actual method.
 
 
 # API Documentation
