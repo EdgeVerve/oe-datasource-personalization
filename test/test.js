@@ -16,7 +16,8 @@ oecloud.observe('loaded', function (ctx, next) {
   return next();
 })
 
-
+var Customer;
+var DataSourceDefinition;
 oecloud.boot(__dirname, function (err) {
   if (err) {
     console.log(err);
@@ -105,6 +106,8 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
   this.timeout(10000);
   before('wait for boot scripts to complete', function (done) {
     app.on('test-start', function () {
+      Customer = loopback.findModel("Customer");
+      DataSourceDefinition = loopback.findModel("DataSourceDefinition");
       deleteAllUsers(function (err) {
 	      return done(err);
       });
@@ -225,6 +228,63 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
         expect(bpoToken).to.be.defined;
         done();
       });
+  });
+
+
+  it("it - creating default record in Customer model", function (done) {
+    Customer.create({ name: "A", age: 10 }, { ctx: {tenantId : '/default'}}, function (err, r) {
+      return done(err);
+    });
+  });
+
+  it("it - Create new DataSource for icici tenant", function (done) {
+    var currentDB = process.env.NODE_ENV || '';
+    var datasourceFile;
+
+    if (!currentDB) {
+      datasourceFile = './datasources.json';
+    }
+    else {
+      datasourceFile = './datasources.' + currentDB + '.js';
+    }
+    var temp = require(datasourceFile);
+    var icicidb= Object.assign({}, temp.db);
+
+    icicidb.name = icicidb.name + '-icici';
+    icicidb.id = icicidb.name + '-icici';
+    icicidb.modelName = 'Customer';
+    debugger;
+    if (currentDB && (currentDB.toLowerCase().indexOf('mongo') >= 0 || currentDB.toLowerCase().indexOf('postgre') >= 0)) {
+      var dbname = process.env.DB_NAME || temp.db.name;
+      icicidb.database = dbname + '-icici';
+      if (temp.db.url) {
+        var y = temp.db.url.split('/');
+        var len = y.length;
+        var last = y[len - 1];
+        last = last + '-icici';
+        y[len - 1] = last;
+        icicidb.url = y.join('/');
+        //newds.url = db2.db.url.replace('oe-cloud-test', 'oe-cloud-test-newdb');
+      }
+    }
+    else if (currentDB && currentDB.toLowerCase().indexOf('oracle') >= 0) {
+      icicidb.user = icicidb.user + '-icici';
+    }
+    else {
+      icicidb.url = temp.db.url.replace("oe-datasource-personalization-test", "oe-datasource-personalization-test" + '-icici');
+      icicidb.database = "oe-datasource-personalization-test-icici";
+    }
+    console.log(JSON.stringify(icicidb));
+    DataSourceDefinition.create(icicidb, { ctx: { tenantId: "/default/icici" } }, function (err, r) {
+      return done(err);
+    });
+  });
+
+    it("it - Create record in Customer with icici tenant and it should go in new database for icici", function (done) {
+      Customer.create({ name: "A", age: 10 }, { ctx: { tenantId: '/default/icici' } }, function (err, r) {
+        return done(err);
+      });
+
   });
 
 

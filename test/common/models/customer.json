@@ -1,0 +1,22 @@
+{
+  "name": "Customer",
+  "base": "BaseEntity",
+  "idInjection": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "unique": true
+    },
+    "age": {
+      "type": "number"
+    }
+  },
+  "mixins": {
+    "DataSourcePersonalizationMixin": true,
+    "MultiTenancyMixin": true
+  },
+  "autoscope" :  ["tenantId"],
+  "validations": [],
+  "acls": [],
+  "methods": {}
+}

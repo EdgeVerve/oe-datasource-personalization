@@ -26,7 +26,6 @@ module.exports =
     "name": "db",
     "connector": "oe-connector-postgresql",
     "user": "postgres",
-    "max": 50,
     "connectionTimeout": 50000
   }
 };
