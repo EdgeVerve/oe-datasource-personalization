@@ -10,6 +10,11 @@ var oecloud = require('oe-cloud');
 var loopback = require('loopback');
 
 
+// This is test case for Data Source Personalization Module.
+// 1. Test case first creates DataSource by creating record in Data Source
+// 2. Create mapping between DataSource and Model for tenant ICICI
+// 3. Demonstrate that when record of Model is being created using ICICI tenant, it uses different Data Source
+// 4. While Model record being created using tenant other than ICICI, it uses regular 'db' data source.
 oecloud.observe('loaded', function (ctx, next) {
   //oecloud.attachMixinsToBaseEntity("DataSourcePersonalizationMixin");
   oecloud.setDataSourceDefinitionAutoscope(["tenantId"]);

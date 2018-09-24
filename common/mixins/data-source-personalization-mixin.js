@@ -6,6 +6,12 @@
  */
 
 // Author : Atul
+
+// This file is mixin file and this mixin should be applied on all models which may require DataSource Personalization. You should not apply this mixin on Framework model
+// This mixin should be applied only on Applicaton Data models.
+// Entry Point : Mixin, when applied, creates additional method on Model - called setDataSource(). This metho sets the data source based on context.
+// This way, in multi tenant environment, DataSource of is changed based on context (tenantId).
+
 const util = require('../../lib/utils.js');
 
 function getDataSource(model, options) {
