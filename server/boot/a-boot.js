@@ -8,16 +8,25 @@
 // Author : Atul
 const utils = require('../../lib/utils');
 const loopback = require('loopback');
+const log = require('oe-logger')('oe-datasource-personalization-boot');
+const _ = require('lodash');
+
 module.exports = function (app) {
   var Model = loopback.findModel('DataSourceDefinition');
   Model.observe('after save', (ctx, next) => {
-    if (ctx.instance && ctx.instance.modelName) {
+    if (ctx.instance) {
       var autoScopeFields = utils.getAutoscopeOfDataSourceDefinition();
       var ds = app.dataSources[ctx.instance.id];
-      var temp = Object.assign({}, ctx.options);
-      temp.ctx = temp.ctx || {};
-      temp.ctx.modelName = '/default/' + ctx.instance.modelName;
-      utils.addDataSourceToCache(autoScopeFields, ctx.instance.modelName, temp, ds);
+      var temp = _.cloneDeep(ctx.options.ctx);
+      if (ctx.instance.modelName) {
+        temp.modelName = '/default/' + ctx.instance.modelName;
+        utils.addToDataSourceModelMap(autoScopeFields, ctx.instance.modelName, { ctx: temp }, ds);
+      } else {
+        temp.modelName = '/default';
+        utils.addDataSourceToCache(autoScopeFields, ds.name, { ctx: temp }, ds);
+      }
+
+      log.debug(log.defaultContext(), 'DataSource record being added for %s model with DataSourceName = %s', temp.modelName, ds.name);
     }
     return next();
   });
