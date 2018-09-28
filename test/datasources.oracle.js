@@ -34,6 +34,15 @@ module.exports = {
     'port': oraclePort,
     'password': oracleUserPassword,
     'user': oracleUserName
+  },
+  'appdb': {
+    'name': 'appdb',
+    'connector': 'oe-connector-oracle',
+    'database': oracleSID,
+    'host': oracleHost,
+    'port': oraclePort,
+    'password': oracleUserPassword,
+    'user': oracleUserName
   }
 };
 

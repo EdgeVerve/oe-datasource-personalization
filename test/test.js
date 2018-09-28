@@ -20,6 +20,9 @@ oecloud.observe('loaded', function (ctx, next) {
   oecloud.setDataSourceDefinitionAutoscope(["tenantId"]);
   return next();
 })
+oecloud.addContextField('tenantId', {
+  type: "string"
+});
 
 var Customer;
 var DataSourceDefinition;
@@ -265,7 +268,7 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
     }
 
     if (currentDB && (currentDB.toLowerCase().indexOf('mongo') >= 0 || currentDB.toLowerCase().indexOf('postgre') >= 0)) {
-      var dbname = process.env.DB_NAME || temp[srcdb].name;
+      var dbname = process.env.DB_NAME || temp[srcdb].database;
       icicidb.database = dbname + '-' + newName;
       if (temp[srcdb].url) {
         var y = temp[srcdb].url.split('/');
