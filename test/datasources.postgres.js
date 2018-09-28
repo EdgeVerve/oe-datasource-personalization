@@ -6,7 +6,13 @@
  */
 var postgresHost = process.env.POSTGRES_HOST || 'localhost';
 var dbName = process.env.DB_NAME || 'oe-datasource-personalization-test';
-var dbName2 = 'oe-datasource-appdb';
+var dbName2;
+if (process.env.DB_NAME) {
+  dbName2 = process.env.DB_NAME + '-appdb';
+}
+else
+  dbName2 = 'oe-datasource-appdb';
+
 module.exports = 
 {
   "memdb": {

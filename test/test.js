@@ -268,14 +268,14 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
     }
 
     if (currentDB && (currentDB.toLowerCase().indexOf('mongo') >= 0 || currentDB.toLowerCase().indexOf('postgre') >= 0)) {
-      var dbname = process.env.DB_NAME || temp[srcdb].database;
+      var dbname = temp[srcdb].database;
       icicidb.database = dbname + '-' + newName;
       if (temp[srcdb].url) {
         var y = temp[srcdb].url.split('/');
         var len = y.length;
         var last = y[len - 1];
-        last = last + '-' + newName;
-        y[len - 1] = last;
+        //last = last + '-' + newName;
+        y[len - 1] = icicidb.database;
         icicidb.url = y.join('/');
         //newds.url = db2.db.url.replace('oe-cloud-test', 'oe-cloud-test-newdb');
       }
