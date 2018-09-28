@@ -311,7 +311,7 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
   });
 
   it("t9.4 Create new DataSource for citi tenant", function (done) {
-    if (!process.env.NODE_ENV === 'oracle') {
+    if (process.env.NODE_ENV !== 'oracle') {
       var citidb = createNewDb("db", "citidb", "Customer");
       DataSourceDefinition.create(citidb, citiCtx, function (err, r) {
         return done(err);
@@ -323,7 +323,7 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
   });
 
   it("t9.5 Create record in Customer with citi tenant and it should go to citi specific database", function (done) {
-    if (!process.env.NODE_ENV === 'oracle') {
+    if (process.env.NODE_ENV !== 'oracle') {
       Customer.create({ name: "CitiA", age: 10 }, citiCtx, function (err, r) {
         return done(err);
       });
@@ -335,7 +335,7 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
 
 
   it("t9.6 fetching records as citi tenant (HTTP) - only record which went to personalized database should be retrieved", function (done) {
-    if (!process.env.NODE_ENV === 'oracle') {
+    if (process.env.NODE_ENV !== 'oracle') {
       api
         .set('Accept', 'application/json')
         .get(basePath + '/Customers?access_token=' + cititoken)
