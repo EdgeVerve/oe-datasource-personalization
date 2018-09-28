@@ -6,6 +6,13 @@
  */
 var postgresHost = process.env.POSTGRES_HOST || 'localhost';
 var dbName = process.env.DB_NAME || 'oe-datasource-personalization-test';
+var dbName2;
+if (process.env.DB_NAME) {
+  dbName2 = process.env.DB_NAME + '-appdb';
+}
+else
+  dbName2 = 'oe-datasource-appdb';
+
 module.exports = 
 {
   "memdb": {
@@ -23,7 +30,21 @@ module.exports =
     "url": "postgres://postgres:postgres@" + postgresHost + ":5432/" + dbName,
     "database": dbName,
     "password": "postgres",
+    "enableDbCreation" : true,
     "name": "db",
+    "connector": "oe-connector-postgresql",
+    "user": "postgres",
+    "connectionTimeout": 50000
+  },
+
+  "appdb": {
+    "host": postgresHost,
+    "port": 5432,
+    "url": "postgres://postgres:postgres@" + postgresHost + ":5432/" + dbName2,
+    "database": dbName2,
+    "password": "postgres",
+    "enableDbCreation": true,
+    "name": "appdb",
     "connector": "oe-connector-postgresql",
     "user": "postgres",
     "connectionTimeout": 50000

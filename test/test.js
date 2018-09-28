@@ -20,6 +20,9 @@ oecloud.observe('loaded', function (ctx, next) {
   oecloud.setDataSourceDefinitionAutoscope(["tenantId"]);
   return next();
 })
+oecloud.addContextField('tenantId', {
+  type: "string"
+});
 
 var Customer;
 var DataSourceDefinition;
@@ -42,15 +45,6 @@ oecloud.boot(__dirname, function (err) {
       var user = result[0];
       if (user.username === "admin") {
         instance.tenantId = '/default';
-      }
-      else if (user.username === "evuser") {
-        instance.tenantId = '/default/infosys/ev';
-      }
-      else if (user.username === "infyuser") {
-        instance.tenantId = '/default/infosys';
-      }
-      else if (user.username === "bpouser") {
-        instance.tenantId = '/default/infosys/bpo';
       }
       else if (user.username === "iciciuser") {
         instance.tenantId = '/default/icici';
@@ -114,7 +108,7 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
       Customer = loopback.findModel("Customer");
       DataSourceDefinition = loopback.findModel("DataSourceDefinition");
       deleteAllUsers(function (err) {
-	      return done(err);
+        return done(err);
       });
     });
   });
@@ -128,9 +122,6 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
     api.set('Accept', 'application/json')
       .post(url)
       .send([{ username: "admin", password: "admin", email: "admin@admin.com" },
-      { username: "evuser", password: "evuser", email: "evuser@evuser.com" },
-      { username: "infyuser", password: "infyuser", email: "infyuser@infyuser.com" },
-      { username: "bpouser", password: "bpouser", email: "bpouser@bpouser.com" },
       { username: "iciciuser", password: "iciciuser", email: "iciciuser@iciciuser.com" },
       { username: "citiuser", password: "citiuser", email: "citiuser@citiuser.com" }
       ])
@@ -140,9 +131,6 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
         expect(result[0].id).to.be.defined;
         expect(result[1].id).to.be.defined;
         expect(result[2].id).to.be.defined;
-        expect(result[3].id).to.be.defined;
-        expect(result[4].id).to.be.defined;
-        expect(result[5].id).to.be.defined;
         done();
       });
   });
@@ -161,53 +149,8 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
       });
   });
 
-
-  var infyToken;
-  it('t3 Login with infy credentials', function (done) {
-    var url = basePath + '/users/login';
-    api.set('Accept', 'application/json')
-      .post(url)
-      .send({ username: "infyuser", password: "infyuser" })
-      .end(function (err, response) {
-        var result = response.body;
-        infyToken = result.id;
-        expect(infyToken).to.be.defined;
-        done();
-      });
-  });
-
-  var evToken;
-  it('t4 Login with ev credentials', function (done) {
-    var url = basePath + '/users/login';
-    api.set('Accept', 'application/json')
-      .post(url)
-      .send({ username: "evuser", password: "evuser" })
-      .end(function (err, response) {
-        var result = response.body;
-        evToken = result.id;
-        expect(evToken).to.be.defined;
-        done();
-      });
-  });
-
-
-  var bpoToken;
-  it('t5 Login with bpo credentials', function (done) {
-    var url = basePath + '/users/login';
-    api.set('Accept', 'application/json')
-      .post(url)
-      .send({ username: "bpouser", password: "bpouser" })
-      .end(function (err, response) {
-        var result = response.body;
-        bpoToken = result.id;
-        expect(bpoToken).to.be.defined;
-        done();
-      });
-  });
-
-
   var icicitoken;
-  it('t5 Login with bpo credentials', function (done) {
+  it('t3 Login with bpo credentials', function (done) {
     var url = basePath + '/users/login';
     api.set('Accept', 'application/json')
       .post(url)
@@ -215,14 +158,14 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
       .end(function (err, response) {
         var result = response.body;
         icicitoken = result.id;
-        expect(bpoToken).to.be.defined;
+        expect(icicitoken).to.be.defined;
         done();
       });
   });
 
 
   var cititoken;
-  it('t5 Login with bpo credentials', function (done) {
+  it('t4 Login with bpo credentials', function (done) {
     var url = basePath + '/users/login';
     api.set('Accept', 'application/json')
       .post(url)
@@ -230,19 +173,81 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
       .end(function (err, response) {
         var result = response.body;
         cititoken = result.id;
-        expect(bpoToken).to.be.defined;
+        expect(cititoken).to.be.defined;
         done();
       });
   });
 
 
-  it("it - creating default record in Customer model", function (done) {
-    Customer.create({ name: "A", age: 10 }, { ctx: {tenantId : '/default'}}, function (err, r) {
+  it("t5 - creating default record in Customer model", function (done) {
+    Customer.create({ name: "A", age: 10 }, defaultContext, function (err, r) {
       return done(err);
     });
   });
 
-  it("it - Create new DataSource for icici tenant", function (done) {
+  it("t6 - creating icici record in Customer model", function (done) {
+    Customer.create({ name: "Icici", age: 10 }, iciciCtx, function (err, r) {
+      return done(err);
+    });
+  });
+
+  it("t7 - creating citi record in Customer model", function (done) {
+    Customer.create({ name: "citi", age: 10 }, citiCtx, function (err, r) {
+      return done(err);
+    });
+  });
+
+  it("t8.1 - fetching records as default tenant", function (done) {
+    api
+      .set('Accept', 'application/json')
+      .get(basePath + '/Customers?access_token=' + adminToken)
+      .send()
+      .expect(200).end(function (err, res) {
+        //console.log('response body : ' + JSON.stringify(res.body, null, 4));
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        var results = res.body;
+        expect(results.length).to.equal(1);
+        expect(results[0].name).to.equal("A");
+        done();
+      });
+  });
+  it("t8.2 - fetching records as icici tenant", function (done) {
+    api
+      .set('Accept', 'application/json')
+      .get(basePath + '/Customers?access_token=' + icicitoken)
+      .send()
+      .expect(200).end(function (err, res) {
+        //console.log('response body : ' + JSON.stringify(res.body, null, 4));
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        var results = res.body;
+        expect(results.length).to.equal(1);
+        expect(results[0].name).to.equal("Icici");
+        done();
+      });
+  });
+
+  it("t8.3 - fetching records as citi tenant", function (done) {
+    api
+      .set('Accept', 'application/json')
+      .get(basePath + '/Customers?access_token=' + cititoken)
+      .send()
+      .expect(200).end(function (err, res) {
+        //console.log('response body : ' + JSON.stringify(res.body, null, 4));
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        var results = res.body;
+        expect(results.length).to.equal(1);
+        expect(results[0].name).to.equal("citi");
+        done();
+      });
+  });
+
+  function createNewDb(srcdb, newName, modelName) {
     var currentDB = process.env.NODE_ENV || '';
     var datasourceFile;
 
@@ -253,46 +258,279 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
       datasourceFile = './datasources.' + currentDB + '.js';
     }
     var temp = require(datasourceFile);
-    var icicidb= Object.assign({}, temp.db);
+    var icicidb = Object.assign({}, temp[srcdb]);
 
-    icicidb.name = icicidb.name + '-icici';
-    icicidb.id = icicidb.name + '-icici';
-    icicidb.modelName = 'Customer';
-    debugger;
+    icicidb.id = icicidb.name + '-' + newName;
+    icicidb.name = icicidb.name + '-' + newName;
+    
+    if (modelName) {
+      icicidb.modelName = modelName;
+    }
+
     if (currentDB && (currentDB.toLowerCase().indexOf('mongo') >= 0 || currentDB.toLowerCase().indexOf('postgre') >= 0)) {
-      var dbname = process.env.DB_NAME || temp.db.name;
-      icicidb.database = dbname + '-icici';
-      if (temp.db.url) {
-        var y = temp.db.url.split('/');
+      var dbname = temp[srcdb].database;
+      icicidb.database = dbname + '-' + newName;
+      if (temp[srcdb].url) {
+        var y = temp[srcdb].url.split('/');
         var len = y.length;
         var last = y[len - 1];
-        last = last + '-icici';
-        y[len - 1] = last;
+        //last = last + '-' + newName;
+        y[len - 1] = icicidb.database;
         icicidb.url = y.join('/');
         //newds.url = db2.db.url.replace('oe-cloud-test', 'oe-cloud-test-newdb');
       }
     }
     else if (currentDB && currentDB.toLowerCase().indexOf('oracle') >= 0) {
-      icicidb.user = icicidb.user + '-icici';
+      icicidb.user = icicidb.user + '-' + newName;
     }
     else {
-      icicidb.url = temp.db.url.replace("oe-datasource-personalization-test", "oe-datasource-personalization-test" + '-icici');
-      icicidb.database = "oe-datasource-personalization-test-icici";
+      icicidb.url = temp[srcdb].url.replace(temp[srcdb].database, temp[srcdb].database + '-' + newName);
+      icicidb.database = temp[srcdb].database + '-' + newName;;
     }
     console.log(JSON.stringify(icicidb));
-    DataSourceDefinition.create(icicidb, { ctx: { tenantId: "/default/icici" } }, function (err, r) {
+    return icicidb;
+  }
+
+  it("t9.1 - Create new DataSource for icici tenant", function (done) {
+    var icicidb = createNewDb("db", "icici", "Customer");
+    DataSourceDefinition.create(icicidb, iciciCtx, function (err, r) {
       return done(err);
     });
   });
 
-    it("it - Create record in Customer with icici tenant and it should go in new database for icici", function (done) {
-      Customer.create({ name: "A", age: 10 }, { ctx: { tenantId: '/default/icici' } }, function (err, r) {
+  it("t9.2 Create record in Customer with icici tenant and it should go in new database for icici", function (done) {
+    Customer.create({ name: "IciciA", age: 10 }, iciciCtx, function (err, r) {
+      return done(err);
+    });
+  });
+
+  it("t9.3 Create record in Customer with citi tenant and it should go to default database", function (done) {
+    Customer.create({ name: "CitiA", age: 10 }, citiCtx, function (err, r) {
+      return done(err);
+    });
+  });
+
+  it("t9.4 Create new DataSource for citi tenant", function (done) {
+    if (process.env.NODE_ENV !== 'oracle') {
+      var citidb = createNewDb("db", "citidb", "Customer");
+      DataSourceDefinition.create(citidb, citiCtx, function (err, r) {
         return done(err);
       });
+    }
+    else {
+      return done();
+    }
+  });
+
+  it("t9.5 Create record in Customer with citi tenant and it should go to citi specific database", function (done) {
+    if (process.env.NODE_ENV !== 'oracle') {
+      Customer.create({ name: "CitiA", age: 10 }, citiCtx, function (err, r) {
+        return done(err);
+      });
+    }
+    else {
+      return done();
+    }
+  });
+
+
+  it("t9.6 fetching records as citi tenant (HTTP) - only record which went to personalized database should be retrieved", function (done) {
+    if (process.env.NODE_ENV !== 'oracle') {
+      api
+        .set('Accept', 'application/json')
+        .get(basePath + '/Customers?access_token=' + cititoken)
+        .send()
+        .expect(200).end(function (err, res) {
+          //console.log('response body : ' + JSON.stringify(res.body, null, 4));
+          if (err || res.body.error) {
+            return done(err || (new Error(res.body.error)));
+          }
+          var results = res.body;
+          expect(results.length).to.equal(1);
+          expect(results[0].name).to.equal("CitiA");
+          done();
+        });
+    }
+    else {
+      return done();
+    }
 
   });
 
 
+  it("t9.7 - fetching records as icici tenant(HTTP) - only record which went to personalized database should be retrieved", function (done) {
 
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    api
+      .set('Accept', 'application/json')
+      .get(basePath + '/Customers?access_token=' + icicitoken)
+      .send()
+      .expect(200).end(function (err, res) {
+        //console.log('response body : ' + JSON.stringify(res.body, null, 4));
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        var results = res.body;
+        expect(results.length).to.equal(1);
+        expect(results[0].name).to.equal("IciciA");
+        done();
+      });
+  });
+
+  it("t10.1 - Create employee record 'appdb' datasource by posting into Employee model as icici user", function (done) {
+
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    var data = {
+      name: "IciciEmployee",
+      age: 10
+    };
+    api
+      .set('Accept', 'application/json')
+      .post(basePath + '/Employees' + '?access_token=' + icicitoken)
+      .send(data)
+      .expect(200).end(function (err, res) {
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        done();
+      });
+  });
+
+  it("t10.2 - Create employee record 'appdb' datasource by posting into Employee model as citi user", function (done) {
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    var data = {
+      name: "CitiEmployee",
+      age: 10
+    };
+    api
+      .set('Accept', 'application/json')
+      .post(basePath + '/Employees' + '?access_token=' + cititoken)
+      .send(data)
+      .expect(200).end(function (err, res) {
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        done();
+      });
+  });
+
+  it("t11.1 - Personalized 'appdb' for icici tenant", function (done) {
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    var icicidb = createNewDb("appdb", "icicidb");
+    icicidb.name = "appdb";
+    DataSourceDefinition.create(icicidb, iciciCtx, function (err, r) {
+      return done(err);
+    });
+  });
+  it("t11.2 - Create employee record 'appdb' datasource by posting into Employee model as icici user - should go into personalized appdb", function (done) {
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+
+    var data = {
+      name: "IciciEmployee2",
+      age: 10
+    };
+    api
+      .set('Accept', 'application/json')
+      .post(basePath + '/Employees' + '?access_token=' + icicitoken)
+      .send(data)
+      .expect(200).end(function (err, res) {
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        done();
+      });
+  });
+
+  it("t11.2 - fetching Employee records as icici tenant - only record which went to personalized appdb database should be retrieved", function (done) {
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    var employeeModel = loopback.findModel("Employee");
+    employeeModel.find({}, iciciCtx, function (err, results) {
+      expect(results.length).to.equal(1);
+      expect(results[0].name).to.equal("IciciEmployee2");
+      done();
+    });
+  });
+
+
+  it("t11.3 - fetching Employee records as icici tenant(HTTP) - only record which went to personalized appdb database should be retrieved", function (done) {
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    api
+      .set('Accept', 'application/json')
+      .get(basePath + '/Employees?access_token=' + icicitoken)
+      .send()
+      .expect(200).end(function (err, res) {
+        //console.log('response body : ' + JSON.stringify(res.body, null, 4));
+        if (err || res.body.error) {
+          return done(err || (new Error(res.body.error)));
+        }
+        var results = res.body;
+        console.log(results);
+        expect(results.length).to.equal(1);
+        expect(results[0].name).to.equal("IciciEmployee2");
+        done();
+      });
+  });
+
+  it("t12.1 - Test case to use all other methods", function (done) {
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    var employeeModel = loopback.findModel("Employee");
+    employeeModel.find({}, iciciCtx, function (err, results) {
+      expect(results.length).to.equal(1);
+      expect(results[0].name).to.equal("IciciEmployee2");
+      var inst = results[0];
+      var data = { age: 103 , id : inst.id};
+      debugger;
+      inst.updateAttributes(data, iciciCtx, function (err, r) {
+        if (err) {
+          return done(err);
+        }
+        employeeModel.upsert({ name: "Chagnedname" + r.name, age: 555 }, iciciCtx, function (err2, r2) {
+          return done(err2);
+        });
+      });
+    });
+  });
+
+  it("t12.2 - Test case to use all other methods", function (done) {
+    if (process.env.NODE_ENV === 'oracle') {
+      return done();
+    }
+
+    var employeeModel = loopback.findModel("Employee");
+    employeeModel.findOrCreate({
+      where: { id: "x" }
+    }, { id: "x", name: "xname", age: 44 }, iciciCtx, function (err, results) {
+      employeeModel.replaceById('x', { id: 'x', name: 'yname', age: 55 }, iciciCtx, function (e2, r2) {
+        return done(e2);
+      });
+    });
+
+  });
 });
+
+
 
