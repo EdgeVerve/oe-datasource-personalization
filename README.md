@@ -13,6 +13,7 @@
   * [Changes done in DataSourceDefinition](#changes-done-in-datasourcedefinition)
   * [DataSourcePersonalizationMixin](#datasourcepersonalizationmixin)
   * [setDataSource(options)](#setdatasource-options-)
+  * [util.js](#utiljs)
   * [wrapper.js](#wrapperjs)
 - [API Documentation](#api-documentation)
   * [addSettingsToDataSourceDefinition(s)](#addsettingstodatasourcedefinition-s-)
@@ -140,6 +141,27 @@ This mixin should be applied for the model for which you want to enable Data Sou
 ## setDataSource(options)
 
 This new method gets added to all models for which **DataSourcePersonalizationMixin** is enabled. This function is called just before DAO's (DataAccessObject) model methods are called. For example, before model.find() is called, this module calls model.setDataSource() function allowing to change the data source of model.
+
+## util.js
+
+This file contains all utility functions - basically to store all datasources and allow access to data sources based on context. 
+There are two types of structure are maintained. One structure (or store) keeps mapping between data source and model and other maintains Datasource with context.
+Getting datasource from this store is two step process. 
+* Find best match data source from mapping store
+* Find best match data source from datasource store
+
+If data source from mapping store is found, return that data source to caller. If not, attempt to find datasource based on context.
+
+Consider below table in DataSourceDefinition
+
+
+| DataSource Name | Actual Database | Model Name | Context | Comment |
+| --------------- | --------------- | ---------- | ------- | ------- |
+| db2 | Employee | db2 | default | **db2** will be returned for all context and for Employee model regardless of context |
+| db2 | Employee | db2-t1 | default/t1 | **db2-with db2-t1 database** will be returned for all tenant t1 and for Employee model context |
+| db | Dont care | db-t1 | default/t1 | **db with db-t1 database** will be returned for all tenant t1 for all models after above rule is applied |
+| db | Dont care | db | default | **db** will be returned for all context and for all models after above rule applies |
+
 
 ## wrapper.js
 
