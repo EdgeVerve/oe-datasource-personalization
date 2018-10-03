@@ -13,7 +13,6 @@ before_script:
   - export group=${CI_PROJECT_NAMESPACE//[^[:alnum:]]/}
   - export branch=${CI_BUILD_REF_NAME//[^[:alnum:]]/}
   - export pipelineId=${CI_PIPELINE_ID//[^[:alnum:]]/}
-  - npm config set registry $NPM_REGISTRY
 
 npminstall:
   stage: pre-build
