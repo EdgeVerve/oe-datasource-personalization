@@ -36,6 +36,7 @@ oecloud.boot(__dirname, function (err) {
     var userModel = loopback.findModel("User");
     var instance = ctx.instance;
     userModel.find({ where: { id: instance.userId } }, {}, function (err, result) {
+      var ctx={};
       if (err) {
         return next(err);
       }
@@ -44,14 +45,15 @@ oecloud.boot(__dirname, function (err) {
       }
       var user = result[0];
       if (user.username === "admin") {
-        instance.tenantId = '/default';
+        ctx.tenantId = '/default';
       }
       else if (user.username === "iciciuser") {
-        instance.tenantId = '/default/icici';
+        ctx.tenantId = '/default/icici';
       }
       else if (user.username === "citiuser") {
-        instance.tenantId = '/default/citi';
+        ctx.tenantId = '/default/citi';
       }
+      instance.ctx = ctx;
       return next(err);
     });
   });
@@ -503,7 +505,6 @@ describe(chalk.blue('oe-datasource-personalization Started'), function (done) {
       expect(results[0].name).to.equal("IciciEmployee2");
       var inst = results[0];
       var data = { age: 103 , id : inst.id};
-      debugger;
       inst.updateAttributes(data, iciciCtx, function (err, r) {
         if (err) {
           return done(err);
