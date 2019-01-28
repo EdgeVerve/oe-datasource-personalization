@@ -1,7 +1,7 @@
 {
   "name": "oe-datasource-personalization",
-  "version": "0.0.1",
-  "description": "oe-cloud modularization project",
+  "version": "2.0.0",
+  "description": "oe-cloud modularization project aka oec-next",
   "engines": {
     "node": ">=6"
   },
@@ -14,10 +14,7 @@
     "grunt-cover": "grunt test-with-coverage"
   },
   "dependencies": {
-    "camelcase": "^3.0.0",
-    "lodash": "4.17.10",
-    "oe-cloud": "git+http://evgit/oec-next/oe-cloud.git#master",
-    "oe-multi-tenancy": "git+http://evgit/oec-next/oe-multi-tenancy.git#master"
+    "lodash": "4.17.11"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
@@ -40,6 +37,8 @@
     "superagent-defaults": "^0.1.14",
     "supertest": "^1.1.0",
     "loopback-connector-mongodb": "^3.4.2",
+    "oe-cloud": "git+http://evgit/oec-next/oe-cloud.git#master",
+    "oe-multi-tenancy": "git+http://evgit/oec-next/oe-multi-tenancy.git#master",
     "oe-connector-postgresql": "git+http://evgit/oec-next/oe-connector-postgresql.git#master"
   },
   "repository": {
