@@ -45,5 +45,6 @@
     "type": "git",
     "url": "git@evgit:oec-next/oe-datasource-personalization.git"
   },
+  "author" : "Atul Pandit <atul_pandit@infosys.com>",
   "license": "MIT"
 }
