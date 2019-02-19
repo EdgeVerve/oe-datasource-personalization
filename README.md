@@ -50,7 +50,7 @@ To use oe-datasource-personalization in your project, you must include this pack
 
 
 ```javascript
-"oe-datasource-personalization": "git+http://evgit/oecloud.io/oe-datasource-personalization.git#master"
+"oe-datasource-personalization": "git+http://evgit/oecloud.io/oe-datasource-personalization.git#2.0.0"
 ```
 
 You can also install this mixin on command line using npm install.
