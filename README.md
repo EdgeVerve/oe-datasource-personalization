@@ -36,7 +36,7 @@ In this section, we will see how we can use install this module in our project. 
 ## Testing and Code coverage
 
 ```sh
-$ git clone http://evgit/oec-next/oe-datasource-personalization.git
+$ git clone http://evgit/oecloud.io/oe-datasource-personalization.git
 $ cd oe-datasource-personalization
 $ npm install --no-optional
 $ npm run grunt-cover
@@ -50,10 +50,10 @@ To use oe-datasource-personalization in your project, you must include this pack
 
 
 ```javascript
-"oe-datasource-personalization": "git+http://evgit/oec-next/oe-datasource-personalization.git#master"
+"oe-datasource-personalization": "git+http://evgit/oecloud.io/oe-datasource-personalization.git#master"
 ```
 
-You can also install this mixin on command line using npm install. 
+You can also install this mixin on command line using npm install.
 
 
 ```sh
@@ -85,7 +85,7 @@ When you include oe-datasource-personalization module in your project, you will 
 ]
 ```
 
-By putting entry as shown above, this module is loaded into application. 
+By putting entry as shown above, this module is loaded into application.
 
 ## Enabling Data Source Personalization
 
@@ -115,7 +115,7 @@ oecloud.observe('loaded', function (ctx, next) {
 })
 ```
 
-Above code will enable Data Source personalization enabled for all those models for which this Mixin is enabled. 
+Above code will enable Data Source personalization enabled for all those models for which this Mixin is enabled.
 
 **Note** - DataSource Personalization uses MultiTenancyMixin only for DataSourceDefinition model. Therefore, you don't have to enable Multi tenancy for the Model. If you look at test case, you will see that Customer Model doesn't have multi tenancy enabled. Only DataSourceDefinition model has multi-tenancy mixin enabled.
 
@@ -144,9 +144,9 @@ This new method gets added to all models for which **DataSourcePersonalizationMi
 
 ## util.js
 
-This file contains all utility functions - basically to store all datasources and allow access to data sources based on context. 
+This file contains all utility functions - basically to store all datasources and allow access to data sources based on context.
 There are two types of structure are maintained. One structure (or store) keeps mapping between data source and model and other maintains Datasource with context.
-Getting datasource from this store is two step process. 
+Getting datasource from this store is two step process.
 * Find best match data source from mapping store
 * Find best match data source from datasource store
 
@@ -172,7 +172,7 @@ This file override all DAO methods and call setDataSource() before control is pa
 
 ## addSettingsToDataSourceDefinition(s)
 
-This function is created on oecloud application object and can be used to change the settings of DataSourceDefinition model. This is typically used to set options or some other parameters like properties. 
+This function is created on oecloud application object and can be used to change the settings of DataSourceDefinition model. This is typically used to set options or some other parameters like properties.
 
 Below example will show how to add new column to this model
 
@@ -192,7 +192,7 @@ oecloud.addSettingsToDataSourceDefinition(newProperties);
 
 ## setDataSourceDefinitionAutoscope(autoscopeFields)
 
-This function is also created on oecloud object. This function can be used to set autoscope property of the Model. If autoscope property is set at BaseEntity level, then it can be used. Or else, programmer has choice to set autoscope property separately. 
+This function is also created on oecloud object. This function can be used to set autoscope property of the Model. If autoscope property is set at BaseEntity level, then it can be used. Or else, programmer has choice to set autoscope property separately.
 
 ```javaScript
 const oecloud = require('oe-cloud');
