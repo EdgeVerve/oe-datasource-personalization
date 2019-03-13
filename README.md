@@ -36,7 +36,7 @@ In this section, we will see how we can use install this module in our project. 
 ## Testing and Code coverage
 
 ```sh
-$ git clone http://evgit/oecloud.io/oe-datasource-personalization.git
+$ git clone https://github.com/EdgeVerve/oe-datasource-personalization.git
 $ cd oe-datasource-personalization
 $ npm install --no-optional
 $ npm run grunt-cover
@@ -46,11 +46,11 @@ you should see coverage report in coverage folder.
 
 ## Installation
 
-To use oe-datasource-personalization in your project, you must include this package into your package.json as shown below. So when you do **npm install** this package will be made available. Please ensure the source of this package is right and updated. For now we will be using **evgit** as source. Also, please note that, to use this module, you project must be **oeCloud** based project.
+To use oe-datasource-personalization in your project, you must include this package into your package.json as shown below. So when you do **npm install** this package will be made available. Please ensure the source of this package is right and updated. Also, please note that, to use this module, your project must be **oeCloud** based project.
 
 
 ```javascript
-"oe-datasource-personalization": "git+http://evgit/oecloud.io/oe-datasource-personalization.git#2.0.0"
+"oe-datasource-personalization": "git+https://github.com/EdgeVerve/oe-datasource-personalization.git#2.0.0"
 ```
 
 You can also install this mixin on command line using npm install.
