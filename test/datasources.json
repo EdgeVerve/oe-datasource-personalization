@@ -13,10 +13,8 @@
     "port": 27017,
     "url": "mongodb://localhost:27017/oe-datasource-personalization-test",
     "database": "oe-datasource-personalization-test",
-    "password": "admin",
     "name": "db",
     "connector": "mongodb",
-    "user": "admin",
     "connectionTimeout": 500000,
     "connectTimeoutMS": 500000,
     "socketTimeoutMS": 500000
@@ -27,10 +25,8 @@
     "port": 27017,
     "url": "mongodb://localhost:27017/oe-datasource-appdb",
     "database": "oe-datasource-appdb",
-    "password": "admin",
     "name": "appdb",
     "connector": "mongodb",
-    "user": "admin",
     "connectionTimeout": 500000,
     "connectTimeoutMS": 500000,
     "socketTimeoutMS": 500000

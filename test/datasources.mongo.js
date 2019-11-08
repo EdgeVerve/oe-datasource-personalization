@@ -36,10 +36,8 @@ module.exports =
     "port": 27017,
     "url": "mongodb://" + mongoHost + ":27017/" + dbName2,
     "database": dbName2,
-    "password": "admin",
     "name": "appdb",
     "connector": "mongodb",
-    "user": "admin",
     "connectionTimeout": 500000
   }
 };
