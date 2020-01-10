@@ -7,14 +7,13 @@
     "name": "transient",
     "connector": "transient"
   },
-
   "db": {
     "host": "localhost",
     "port": 27017,
     "url": "mongodb://localhost:27017/oe-datasource-personalization-test",
     "database": "oe-datasource-personalization-test",
     "name": "db",
-    "connector": "mongodb",
+    "connector": "oe-connector-mongodb",
     "connectionTimeout": 500000,
     "connectTimeoutMS": 500000,
     "socketTimeoutMS": 500000
@@ -26,7 +25,7 @@
     "url": "mongodb://localhost:27017/oe-datasource-appdb",
     "database": "oe-datasource-appdb",
     "name": "appdb",
-    "connector": "mongodb",
+    "connector": "oe-connector-mongodb",
     "connectionTimeout": 500000,
     "connectTimeoutMS": 500000,
     "socketTimeoutMS": 500000
