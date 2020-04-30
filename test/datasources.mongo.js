@@ -5,44 +5,36 @@
  *
  */
 var mongoHost = process.env.MONGO_HOST || 'localhost';
+var mongoPort = process.env.MONGO_PORT ? parseInt(process.env.MONGO_PORT) : 27017;
 var dbName = process.env.DB_NAME || 'oe-datasource-personalization-test';
-if (process.env.DB_NAME) {
-  dbName2 = process.env.DB_NAME + '-appdb';
-}
-else
-  dbName2 = 'oe-datasource-appdb';
+var dbName2 = process.env.DB_NAME ? process.env.DB_NAME + '-appdb' : 'oe-datasource-appdb';
 
-module.exports = 
-{
-  "memdb": {
-    "name": "memdb",
-    "connector": "memory"
+module.exports = {
+  'memdb': {
+    'name': 'memdb',
+    'connector': 'memory'
   },
-  "transient": {
-    "name": "transient",
-    "connector": "transient"
+  'transient': {
+    'name': 'transient',
+    'connector': 'transient'
   },
-  "db": {
-    "host": mongoHost,
-    "port": 27017,
-    "url": "mongodb://" + mongoHost + ":27017/" + dbName,
-    "database": dbName,
-    "password": "admin",
-    "name": "db",
-    "connector": "mongodb",
-    "user": "admin",
-    "connectionTimeout": 500000
+  'db': {
+    'host': mongoHost,
+    'port': mongoPort,
+    'url': 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName,
+    'database': dbName,
+    'name': 'db',
+    'connector': 'oe-connector-mongodb',
+    'connectionTimeout': 500000
   },
-  "appdb": {
-    "host": mongoHost,
-    "port": 27017,
-    "url": "mongodb://" + mongoHost + ":27017/" + dbName2,
-    "database": dbName2,
-    "password": "admin",
-    "name": "appdb",
-    "connector": "mongodb",
-    "user": "admin",
-    "connectionTimeout": 500000
+  'appdb': {
+    'host': mongoHost,
+    'port': mongoPort,
+    'url': 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName2,
+    'database': dbName2,
+    'name': 'appdb',
+    'connector': 'oe-connector-mongodb',
+    'connectionTimeout': 500000
   }
 };
 
