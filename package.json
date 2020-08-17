@@ -1,6 +1,6 @@
 {
   "name": "oe-datasource-personalization",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "oe-cloud modularization project aka oecloud.io",
   "engines": {
     "node": ">=6"
@@ -14,7 +14,7 @@
     "grunt-cover": "grunt test-with-coverage"
   },
   "dependencies": {
-    "lodash": "4.17.14"
+    "lodash": "4.17.19"
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",
@@ -28,11 +28,11 @@
     "grunt-mocha-istanbul": "5.0.2",
     "istanbul": "0.4.5",
     "mocha": "5.2.0",
-    "oe-cloud": "git+http://evgit/oecloud.io/oe-cloud.git#2.2.0",
+    "oe-cloud": "git+http://evgit/oecloud.io/oe-cloud.git#2.3.0",
     "oe-connector-mongodb": "git+http://evgit/oecloud.io/oe-connector-mongodb.git#2.2.0",
-    "oe-connector-oracle": "git+http://evgit/oecloud.io/oe-connector-oracle.git#2.2.0",
-    "oe-connector-postgresql": "git+http://evgit/oecloud.io/oe-connector-postgresql.git#2.2.0",
-    "oe-multi-tenancy": "git+http://evgit/oecloud.io/oe-multi-tenancy.git#2.2.0",
+    "oe-connector-oracle": "git+http://evgit/oecloud.io/oe-connector-oracle.git#2.3.0",
+    "oe-connector-postgresql": "git+http://evgit/oecloud.io/oe-connector-postgresql.git#2.3.0",
+    "oe-multi-tenancy": "git+http://evgit/oecloud.io/oe-multi-tenancy.git#2.3.0",
     "superagent-defaults": "0.1.14",
     "supertest": "3.4.2"
   },
