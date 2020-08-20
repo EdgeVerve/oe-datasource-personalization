@@ -14,7 +14,7 @@
     "grunt-cover": "grunt test-with-coverage"
   },
   "dependencies": {
-    "lodash": "4.17.19"
+    "lodash": "4.17.20"
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",
