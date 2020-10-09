@@ -6,8 +6,8 @@
  */
 var mongoHost = process.env.MONGO_HOST || 'localhost';
 var mongoPort = process.env.MONGO_PORT ? parseInt(process.env.MONGO_PORT) : 27017;
-var dbName = process.env.DB_NAME || 'oe-datasource-personalization-test';
-var dbName2 = process.env.DB_NAME ? process.env.DB_NAME + '-appdb' : 'oe-datasource-appdb';
+var dbName = process.env.DB_NAME || "dbname";
+var dbName2 = process.env.DB_NAME ? process.env.DB_NAME + '-appdb' : 'dbname-appdb';
 
 module.exports = {
   'memdb': {
